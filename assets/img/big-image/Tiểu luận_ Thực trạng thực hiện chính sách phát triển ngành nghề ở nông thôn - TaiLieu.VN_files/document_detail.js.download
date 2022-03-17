@@ -1,0 +1,248 @@
+function updateDocCol(id,type,val)
+{
+	if(id>0 && val!='')
+	{
+		ajax_updateDocCol(id,type,val);
+	}
+}
+
+function flashRow(obj)
+{
+  obj.style.color = "#0036ff";
+}
+function unFlashRow(obj)
+{
+	obj.style.color = "#505050";
+}
+
+jQuery('.cate_filter').children('ul').children('li').hover(function()
+{
+  	jQuery(this).children('.dropdown').show();
+  },function(){
+  	jQuery(this).children('.dropdown').hide();
+  });
+
+function delComment(id)
+{
+	if(id>0 && isDel==1)
+	{
+		isDel = 0;
+		ajax_delComment(id,intDocID,strLang);
+	}
+}
+
+var postComment = 1;
+function doPostComment()
+{
+	var txtComment1 = jQuery('#txtComment').val();
+	if(txtComment1=='')
+	{
+		alert(document_comment_empty);
+		return false;
+	}
+	if(postComment==1)
+	{
+		postComment = 0;
+		ajax_insertComment(txtComment1,intDocID,strLang);
+	}
+}
+
+jQuery('#lnkActiveDL').click(function()
+{
+	if(isLogin)
+	{
+		if (intNumDownday>intLimitDownday)
+			caobox.show_popup('popup_numdownload_outer',1);
+		else
+		{
+			caobox.show_popup('popup_download_outer',1);
+			refeshCapchaDL();
+		}
+	}
+	else
+	{
+		ym2msgbox.show('msbbox_login',365); return false;
+	}
+});
+
+jQuery('#lnkSTF').click(function()
+{
+	ym2msgbox.show('box_sendfriend_out',320);
+	//caobox.show_popup('popup_sendfriend_outer',1);
+	refeshCapchaSF();
+});
+
+jQuery('#lnkBAD').click(function()
+{
+	caobox.show_popup('popup_badnote_outer',1);
+	refeshCapchaBL();
+});
+function addtofav()
+{
+	if(isLogin)
+	{
+		if(postFav==1)
+		{
+			postFav = 0;
+			ajax_updateStats(intDocID,2,intMemberIDFrom,strUsernameFrom,strURLVI,strURLEN,strTitle,'document');
+		}
+	}
+	else
+	{
+		showDangnhap();
+		
+		// jQuery("#alogin").fancybox({
+			// 'padding'		  : 0,
+			// 'scrolling'		  : 'no',
+			// 'autoDimensions'  : true,
+			// 'autoScale'		  : true,
+			// 'titleShow'		  : false,
+			// 'closeBtn' 	      : false,
+			// helpers: {
+				// title: null
+			// }
+			// //'onClosed'		  : function() {
+				// //$("#login_error").hide();
+			// //}
+		// }).trigger('click');
+	}
+}
+jQuery('#lnkFav').click(function()
+{
+	if(isLogin)
+	{
+		if(postFav==1)
+		{
+			postFav = 0;
+			ajax_updateStats(intDocID,2,intMemberIDFrom,strUsernameFrom,strURLVI,strURLEN,strTitle,'document');
+		}
+	}
+	else
+	{
+		ym2msgbox.show('msbbox_login',600); return false;
+	}
+});
+
+jQuery('#lnkVote').click(function()
+{
+	if(postVote==1)
+	{
+		postVote = 0;
+		ajax_updateStats(intDocID,1,0,'','','','');
+	}
+});
+
+jQuery('#lnkShare').click(function()
+{
+	caobox.show_popup('popup_share_outer',1);
+});
+
+jQuery('#lnkATC').click(function()
+{
+	if(isLogin==1)
+		caobox.show_popup('popup_AddCollection_outer',1);
+	else
+	{
+		ym2msgbox.show('msbbox_login',600); return false;
+	}
+});
+
+jQuery('#lnkATG').click(function()
+{
+	if(isLogin==1)
+		caobox.show_popup('popup_AddGroup_outer',1);
+	else
+	{
+		ym2msgbox.show('msbbox_login',600); return false;
+	}
+});
+
+
+function sendLink(site)
+{
+	var linkhay_url = strURL;
+	switch(site)
+	{
+		case 'hay':
+			window.open("http://linkhay.com/submit?link_url=" + linkhay_url + "&amp;link_title=tailieu.vn&amp;link_content=&amp;link_media=0&amp;utm_source=partner&amp;utm_medium=embedded&amp;utm_campaign=button",'linkHay');
+			break;
+		case 'vietkick':
+			window.open('http://vietkicks.com:80/submit/?url='+encodeURIComponent(linkhay_url)+'&amp;title='+encodeURIComponent('tailieu.vn'),'linkVietKick');
+			break;
+		case 'digg':
+			window.open('http://digg.com/submit?phase=1&url='+encodeURIComponent(linkhay_url)+'&amp;title='+encodeURIComponent('tailieu.vn'),'linkDigg');
+		case 'delicious':
+			window.open('http://delicious.com/save?url='+encodeURIComponent(linkhay_url)+'&amp;title='+encodeURIComponent('tailieu.vn'));
+			break;
+	}
+}
+
+
+var slideArrow = "slideArrow";
+var slideSpeed = 400; // 'slow' 'normal' 'fast'
+var c1 = "up";
+var c2 = "dn";
+var ymTitle = 0;
+var slideArrow_arr;
+var test;
+
+jQuery(document).ready(function()
+{
+	var slideArrow_arr_len = jQuery('.'+slideArrow).length;
+	var slideArrow_arr = jQuery('.'+slideArrow);
+	for (var i=0; i<slideArrow_arr_len; i++)
+	{
+		var titleNodeClose = slideArrow_arr[i].parentNode;
+		var imgPathClose = slideArrow_arr[i].src;
+		var imgUpDownClose = imgPathClose.substring(imgPathClose.lastIndexOf(".")-2, imgPathClose.lastIndexOf("."));
+		if (imgUpDownClose=="up")
+		{
+			var contentNodeClose = jQuery(titleNodeClose).next();
+			contentNodeClose.css('display','none');
+			contentNodeClose.slideUp();
+		}
+	}
+
+	jQuery('.'+slideArrow).bind('click',function()
+	{
+		var titleNode = this.parentNode;
+		jQuery(titleNode).next().slideToggle(slideSpeed);
+		jQuery(titleNode).each(function(index)
+		{
+			jQuery(this).attr('id',"ym_title"+ymTitle++);
+		})
+		var boxNode = titleNode.parentNode.id;
+		var imgPath = this.src;
+		var imgUpDown = imgPath.substring(imgPath.lastIndexOf(".")-2, imgPath.lastIndexOf("."));
+		switch (imgUpDown)
+		{
+			case "up":
+				c1 = "up"; c2 = "dn";
+				break;
+			case "dn":
+				c1 = "dn"; c2 = "up";
+				break;
+		}
+		var imgPathF = imgPath.replace(c1,c2);
+		jQuery('#'+titleNode.id+' img.'+slideArrow).each(function(index)
+		{
+			jQuery(this).attr('src',imgPathF);
+		})
+	});
+})
+
+function delCommentCollection(id)
+{
+	if(id>0 && isDel2==1)
+	{
+		isDel2 = 0;
+		ajax_delComment(id,intDocID,strLang);
+	}
+}
+function loadBox(i,id,total,objID,memID)
+{
+	if( id && (jQuery.trim(jQuery('#' + id).html()) == '') )
+	{
+		ajax_loadBoxContent(i,id,total,objID,memID);
+	}
+}
